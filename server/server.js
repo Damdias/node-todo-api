@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 
+
 var {
     mongoose
 } = require('./db/mongoose');
@@ -10,6 +11,8 @@ var {
 var {
     User
 } = require("./models/user");
+
+var { ObjectID } = require("mongodb");
 
 var app = express();
 app.use(bodyParser.json());
@@ -25,13 +28,29 @@ app.post("/todos", (req, res) => {
     });
 });
 
-app.get("/todos",(req,res)=>{
+app.get("/todos", (req, res) => {
 
-    Todo.find().then((todos)=>{
-        res.send({todos});
-    },(e)=>{
+    Todo.find().then((todos) => {
+        res.send({ todos });
+    }, (e) => {
         res.status(400).send(e);
     });
+})
+
+app.get('/todos/:id', (req, res) => {
+    var id = req.params.id;
+if(!ObjectID.isValid(id)){
+    return res.status(404).send();
+}
+    User.findById(id).then((user) => {
+        if (!user) {
+            return res.status(404).send({ msg: 'Unable to find user' });
+        }
+        res.send({ user });
+    }).catch((e) => {
+        res.status(400).send({ msg: 'Error occuer' });
+    })
+
 })
 
 app.listen(3000, () => {
@@ -39,4 +58,4 @@ app.listen(3000, () => {
 });
 
 
-module.exports = {app};
+module.exports = { app };
