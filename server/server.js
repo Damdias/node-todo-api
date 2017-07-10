@@ -42,11 +42,11 @@ app.get('/todos/:id', (req, res) => {
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
-    User.findById(id).then((user) => {
-        if (!user) {
-            return res.status(404).send({ msg: 'Unable to find user' });
+    Todo.findById(id).then((todo) => {
+        if (!todo) {
+            return res.status(404).send({ msg: 'Unable to find Todo' });
         }
-        res.send({ user });
+        res.send({ todo });
     }).catch((e) => {
         res.status(400).send({ msg: 'Error occuer' });
     })
