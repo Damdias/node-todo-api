@@ -76,7 +76,7 @@ app.delete('/todos/:id', (req, res) => {
                 msg: 'unable to find doc'
             });
         }
-        res.send(doc);
+        res.send({doc});
     }, (e) => {
         res.status(400).send({
             msg: 'unable to find doc'
