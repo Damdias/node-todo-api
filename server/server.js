@@ -1,5 +1,6 @@
 var express = require("express");
 var bodyParser = require("body-parser");
+const _ = require("lodash");
 
 
 var {
@@ -76,7 +77,9 @@ app.delete('/todos/:id', (req, res) => {
                 msg: 'unable to find doc'
             });
         }
-        res.send({doc});
+        res.send({
+            doc
+        });
     }, (e) => {
         res.status(400).send({
             msg: 'unable to find doc'
@@ -86,6 +89,29 @@ app.delete('/todos/:id', (req, res) => {
             msg: 'Error occuer'
         });
     });
+});
+app.patch("/todos/:id", (req, res) => {
+    let id = req.params.id;
+    let body = _.pick(req.body,['text','completed']);
+   if(!ObjectID.isValid(id)){
+       return res.status(404).send({msg:'Invalid id'});
+   }
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }
+    else{
+        body.completed = false;
+        body.completedAt = null;
+    }
+    Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+        if(!todo){
+            return res.status(404).send();
+        }
+        res.send({todo});
+    }).catch((e)=>{
+        res.status(400).send({msg:'Error occure'});
+    })
+   
 })
 
 app.listen(port, () => {
