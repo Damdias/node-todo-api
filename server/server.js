@@ -12,7 +12,9 @@ var {
     User
 } = require("./models/user");
 
-var { ObjectID } = require("mongodb");
+var {
+    ObjectID
+} = require("mongodb");
 const port = process.env.PORT || 3000;
 var app = express();
 app.use(bodyParser.json());
@@ -31,7 +33,9 @@ app.post("/todos", (req, res) => {
 app.get("/todos", (req, res) => {
 
     Todo.find().then((todos) => {
-        res.send({ todos });
+        res.send({
+            todos
+        });
     }, (e) => {
         res.status(400).send(e);
     });
@@ -44,13 +48,44 @@ app.get('/todos/:id', (req, res) => {
     }
     Todo.findById(id).then((todo) => {
         if (!todo) {
-            return res.status(404).send({ msg: 'Unable to find Todo' });
+            return res.status(404).send({
+                msg: 'Unable to find Todo'
+            });
         }
-        res.send({ todo });
+        res.send({
+            todo
+        });
     }).catch((e) => {
-        res.status(400).send({ msg: 'Error occuer' });
+        res.status(400).send({
+            msg: 'Error occuer'
+        });
     })
 
+});
+app.delete('/todos/:id', (req, res) => {
+    let id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send({
+            msg: 'Unable to find id'
+        });
+    }
+    Todo.findByIdAndRemove(id).then((doc) => {
+        if (!doc) {
+            return res.status(404).send({
+                msg: 'unable to find doc'
+            });
+        }
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send({
+            msg: 'unable to find doc'
+        });
+    }).catch((e) => {
+        res.status(400).send({
+            msg: 'Error occuer'
+        });
+    });
 })
 
 app.listen(port, () => {
@@ -58,4 +93,6 @@ app.listen(port, () => {
 });
 
 
-module.exports = { app };
+module.exports = {
+    app
+};
