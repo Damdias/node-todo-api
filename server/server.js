@@ -94,26 +94,36 @@ app.delete('/todos/:id', (req, res) => {
 });
 app.patch("/todos/:id", (req, res) => {
     let id = req.params.id;
-    let body = _.pick(req.body,['text','completed']);
-   if(!ObjectID.isValid(id)){
-       return res.status(404).send({msg:'Invalid id'});
-   }
-    if(_.isBoolean(body.completed) && body.completed){
+    let body = _.pick(req.body, ['text', 'completed']);
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send({ msg: 'Invalid id' });
+    }
+    if (_.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
     }
-    else{
+    else {
         body.completed = false;
         body.completedAt = null;
     }
-    Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
-        if(!todo){
+    Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
+        if (!todo) {
             return res.status(404).send();
         }
-        res.send({todo});
-    }).catch((e)=>{
-        res.status(400).send({msg:'Error occure'});
+        res.send({ todo });
+    }).catch((e) => {
+        res.status(400).send({ msg: 'Error occure' });
     })
-   
+
+});
+
+app.post("/user", (req, res) => {
+    let body = _.pick(req.body, ['email', 'password']);
+    var newuser = new User(body);
+    newuser.save().then((user) => {
+        res.send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
 })
 
 app.listen(port, () => {
